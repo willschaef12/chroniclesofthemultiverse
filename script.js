@@ -1,57 +1,96 @@
-// Define the story data
-const story = {
-    currentCharacter: "Loki",
-    scenes: [
-      {
-        text: "The multiverse is collapsing. Will you act to save it?",
-        choices: [
-          { text: "Yes, save it.", nextScene: 1 },
-          { text: "No, let it fall.", nextScene: 2 }
-        ]
-      },
-      {
-        text: "Loki decides to act and seek out allies across the multiverse.",
-        choices: [
-          { text: "Switch to Flash", nextScene: 3 },
-          { text: "Continue as Loki", nextScene: 4 }
-        ]
-      },
-      {
-        text: "The multiverse crumbles into chaos. Loki revels in its destruction.",
-        choices: []
-      },
-      {
-        text: "Flash joins the mission, racing to stabilize a crumbling world.",
-        choices: [
-          { text: "Help civilians", nextScene: 5 },
-          { text: "Fight the invaders", nextScene: 6 }
-        ]
-      },
-      {
-        text: "Loki continues his journey, uncovering secrets of the collapse.",
-        choices: []
-      },
-      {
-        text: "Flash saves countless lives, gaining the trust of the people.",
-        choices: []
-      },
-      {
-        text: "Flash battles the invaders, pushing them back into the void.",
-        choices: []
+// Define characters and their stats
+const characters = [
+    {
+      name: "Loki",
+      stats: {
+        Intelligence: 95,
+        Strength: 65,
+        Speed: 70,
+        Durability: 80,
+        EnergyProjection: 85,
+        Combat: 75
       }
-    ]
-  };
+    },
+    {
+      name: "Flash",
+      stats: {
+        Intelligence: 80,
+        Strength: 50,
+        Speed: 100,
+        Durability: 70,
+        EnergyProjection: 60,
+        Combat: 85
+      }
+    },
+    {
+      name: "Silver Surfer",
+      stats: {
+        Intelligence: 90,
+        Strength: 100,
+        Speed: 95,
+        Durability: 100,
+        EnergyProjection: 100,
+        Combat: 80
+      }
+    },
+    {
+      name: "Scarlet Witch",
+      stats: {
+        Intelligence: 85,
+        Strength: 70,
+        Speed: 65,
+        Durability: 75,
+        EnergyProjection: 100,
+        Combat: 70
+      }
+    }
+  ];
   
-  // Track the current scene
+  // Track the current scene and character
   let currentSceneIndex = 0;
+  let selectedCharacter = characters[0]; // Default to Loki
   
-  // Function to start the game
-  function startGame() {
-    // Hide the home screen and show the game container
+  // Function to transition to the character selection screen
+  function goToCharacterSelection() {
     document.getElementById("home-screen").classList.remove("active");
+    document.getElementById("character-selection-screen").classList.add("active");
+    loadCharacterCards();
+  }
+  
+  // Function to load character cards
+  function loadCharacterCards() {
+    const charactersElement = document.getElementById("characters");
+    charactersElement.innerHTML = ""; // Clear any existing cards
+  
+    characters.forEach((character, index) => {
+      const card = document.createElement("div");
+      card.className = "character-card";
+      card.innerHTML = `
+        <h2>${character.name}</h2>
+        <div id="character-stats">
+          <p>Intelligence: ${character.stats.Intelligence}</p>
+          <p>Strength: ${character.stats.Strength}</p>
+          <p>Speed: ${character.stats.Speed}</p>
+          <p>Durability: ${character.stats.Durability}</p>
+          <p>Energy Projection: ${character.stats.EnergyProjection}</p>
+          <p>Combat: ${character.stats.Combat}</p>
+        </div>
+      `;
+      card.onclick = () => selectCharacter(index);
+      charactersElement.appendChild(card);
+    });
+  }
+  
+  // Function to select a character
+  function selectCharacter(index) {
+    selectedCharacter = characters[index];
+    story.currentCharacter = selectedCharacter.name;
+  
+    // Transition to the game screen
+    document.getElementById("character-selection-screen").classList.remove("active");
     document.getElementById("game-container").classList.add("active");
   
-    // Initialize the first scene
+    // Start the game
     updateScene();
   }
   
@@ -88,11 +127,7 @@ const story = {
     if (choice) {
       currentSceneIndex = choice.nextScene;
   
-      // Switch character (example logic)
-      if (choice.text.includes("Flash")) {
-        story.currentCharacter = "Flash";
-      }
-  
+      // Update scene
       updateScene();
     }
   }

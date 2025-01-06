@@ -18,7 +18,7 @@
       height: 100vh;
       text-align: center;
     }
-    #home-screen, #game-container {
+    .screen {
       max-width: 600px;
       padding: 20px;
       background-color: #16213e;
@@ -26,7 +26,7 @@
       box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.5);
       display: none;
     }
-    #home-screen.active, #game-container.active {
+    .screen.active {
       display: block;
     }
     #home-screen h1 {
@@ -45,14 +45,28 @@
     #home-screen button:hover {
       background-color: #e94560;
     }
-    #character {
-      font-size: 1.2em;
-      margin-bottom: 10px;
+    .character-card {
+      margin: 10px;
+      padding: 15px;
+      background-color: #0f3460;
+      border-radius: 10px;
+      text-align: left;
+      cursor: pointer;
+      transition: transform 0.2s ease-in-out, background-color 0.3s;
     }
-    #story-text {
-      margin-bottom: 20px;
+    .character-card:hover {
+      transform: scale(1.05);
+      background-color: #e94560;
     }
-    #choices button {
+    .character-card h2 {
+      margin: 0 0 10px;
+    }
+    #character-stats {
+      margin-top: 20px;
+      font-size: 0.9em;
+      line-height: 1.5em;
+    }
+    #game-container button {
       margin: 5px;
       padding: 10px 20px;
       font-size: 1em;
@@ -62,21 +76,27 @@
       background-color: #0f3460;
       color: white;
     }
-    #choices button:hover {
+    #game-container button:hover {
       background-color: #e94560;
     }
   </style>
 </head>
 <body>
   <!-- Home Screen -->
-  <div id="home-screen" class="active">
+  <div id="home-screen" class="screen active">
     <h1>Chronicles of the Multiverse</h1>
     <p>Embark on an epic journey to save the multiverse or let it fall into chaos.</p>
-    <button onclick="startGame()">Start Game</button>
+    <button onclick="goToCharacterSelection()">Start Game</button>
+  </div>
+
+  <!-- Character Selection Screen -->
+  <div id="character-selection-screen" class="screen">
+    <h1>Select Your Character</h1>
+    <div id="characters"></div>
   </div>
 
   <!-- Game Container -->
-  <div id="game-container">
+  <div id="game-container" class="screen">
     <div id="character">Character: Loki</div>
     <div id="story-text">The multiverse is collapsing. Will you act to save it?</div>
     <div id="choices"></div>
