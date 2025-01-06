@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chronicles of the Multiverse</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #1a1a2e;
+      color: white;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      text-align: center;
+    }
+    #game-container {
+      max-width: 600px;
+      padding: 20px;
+      background-color: #16213e;
+      border-radius: 10px;
+      box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.5);
+    }
+    #character {
+      font-size: 1.2em;
+      margin-bottom: 10px;
+    }
+    #story-text {
+      margin-bottom: 20px;
+    }
+    #choices button {
+      margin: 5px;
+      padding: 10px 20px;
+      font-size: 1em;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      background-color: #0f3460;
+      color: white;
+    }
+    #choices button:hover {
+      background-color: #e94560;
+    }
+  </style>
+</head>
+<body>
+  <div id="game-container">
+    <div id="character">Character: Loki</div>
+    <div id="story-text">The multiverse is collapsing. Will you act to save it?</div>
+    <div id="choices">
+      <button onclick="chooseOption(1)">Yes, save it.</button>
+      <button onclick="chooseOption(2)">No, let it fall.</button>
+    </div>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
