@@ -1,116 +1,115 @@
-// Define characters and their stats
+// Character Data
 const characters = [
     {
       name: "Loki",
       stats: {
-        Intelligence: 95,
-        Strength: 65,
-        Speed: 70,
-        Durability: 80,
-        EnergyProjection: 85,
-        Combat: 75
-      }
+        Strength: 7,
+        Speed: 7,
+        Intelligence: 10,
+        Durability: 6,
+        Magic: 10,
+      },
     },
     {
       name: "Flash",
       stats: {
-        Intelligence: 80,
-        Strength: 50,
-        Speed: 100,
-        Durability: 70,
-        EnergyProjection: 60,
-        Combat: 85
-      }
-    },
-    {
-      name: "Silver Surfer",
-      stats: {
-        Intelligence: 90,
-        Strength: 100,
-        Speed: 95,
-        Durability: 100,
-        EnergyProjection: 100,
-        Combat: 80
-      }
+        Strength: 6,
+        Speed: 10,
+        Intelligence: 8,
+        Durability: 5,
+        Agility: 10,
+      },
     },
     {
       name: "Scarlet Witch",
       stats: {
-        Intelligence: 85,
-        Strength: 70,
-        Speed: 65,
-        Durability: 75,
-        EnergyProjection: 100,
-        Combat: 70
-      }
-    }
+        Strength: 5,
+        Speed: 6,
+        Intelligence: 8,
+        Durability: 5,
+        Magic: 10,
+      },
+    },
+    {
+      name: "Silver Surfer",
+      stats: {
+        Strength: 10,
+        Speed: 9,
+        Intelligence: 9,
+        Durability: 10,
+        CosmicPower: 10,
+      },
+    },
   ];
   
-  // Track the current scene and character
-  let currentSceneIndex = 0;
-  let selectedCharacter = characters[0]; // Default to Loki
+  // Story Data
+  const story = {
+    currentCharacter: "Loki",
+    scenes: [
+      {
+        text: "The multiverse is collapsing. Will you act to save it?",
+        choices: [
+          { text: "Yes, save it.", nextScene: 1 },
+          { text: "No, let it fall.", nextScene: 2 },
+        ],
+      },
+      {
+        text: "You decide to act and seek allies across the multiverse.",
+        choices: [
+          { text: "Switch to Flash", nextScene: 3 },
+          { text: "Continue as Loki", nextScene: 4 },
+        ],
+      },
+      {
+        text: "The multiverse crumbles. Chaos reigns supreme.",
+        choices: [],
+      },
+    ],
+  };
   
-  // Function to transition to the character selection screen
+  let currentSceneIndex = 0;
+  
+  // Function to display the character selection screen
   function goToCharacterSelection() {
     document.getElementById("home-screen").classList.remove("active");
     document.getElementById("character-selection-screen").classList.add("active");
-    loadCharacterCards();
-  }
   
-  // Function to load character cards
-  function loadCharacterCards() {
-    const charactersElement = document.getElementById("characters");
-    charactersElement.innerHTML = ""; // Clear any existing cards
+    const container = document.getElementById("character-container");
+    container.innerHTML = ""; // Clear previous characters
   
-    characters.forEach((character, index) => {
+    characters.forEach((character) => {
       const card = document.createElement("div");
       card.className = "character-card";
       card.innerHTML = `
         <h2>${character.name}</h2>
         <div id="character-stats">
-          <p>Intelligence: ${character.stats.Intelligence}</p>
-          <p>Strength: ${character.stats.Strength}</p>
-          <p>Speed: ${character.stats.Speed}</p>
-          <p>Durability: ${character.stats.Durability}</p>
-          <p>Energy Projection: ${character.stats.EnergyProjection}</p>
-          <p>Combat: ${character.stats.Combat}</p>
+          ${Object.entries(character.stats)
+            .map(([key, value]) => `<p><strong>${key}:</strong> ${value}</p>`)
+            .join("")}
         </div>
       `;
-      card.onclick = () => selectCharacter(index);
-      charactersElement.appendChild(card);
+      card.onclick = () => selectCharacter(character.name);
+      container.appendChild(card);
     });
   }
   
-  // Function to select a character
-  function selectCharacter(index) {
-    selectedCharacter = characters[index];
-    story.currentCharacter = selectedCharacter.name;
-  
-    // Transition to the game screen
+  // Function to select a character and start the game
+  function selectCharacter(characterName) {
+    story.currentCharacter = characterName;
     document.getElementById("character-selection-screen").classList.remove("active");
     document.getElementById("game-container").classList.add("active");
-  
-    // Start the game
     updateScene();
   }
   
-  // Function to update the scene
+  // Function to update the current scene
   function updateScene() {
     const scene = story.scenes[currentSceneIndex];
-    const characterElement = document.getElementById("character");
-    const storyTextElement = document.getElementById("story-text");
+    document.getElementById("character").textContent = `Character: ${story.currentCharacter}`;
+    document.getElementById("story-text").textContent = scene.text;
+  
     const choicesElement = document.getElementById("choices");
-  
-    // Update the character name
-    characterElement.textContent = `Character: ${story.currentCharacter}`;
-  
-    // Update the story text
-    storyTextElement.textContent = scene.text;
-  
-    // Clear previous choices
     choicesElement.innerHTML = "";
   
-    // Add new choices
     scene.choices.forEach((choice, index) => {
       const button = document.createElement("button");
       button.textContent = choice.text;
@@ -121,14 +120,13 @@ const characters = [
   
   // Function to handle a choice
   function chooseOption(choiceIndex) {
-    const scene = story.scenes[currentSceneIndex];
-    const choice = scene.choices[choiceIndex];
-  
+    const choice = story.scenes[currentSceneIndex].choices[choiceIndex];
     if (choice) {
       currentSceneIndex = choice.nextScene;
-  
-      // Update scene
       updateScene();
     }
   }
+  
+  // Initialize the game on the home screen
+  document.getElementById("home-screen").classList.add("active");
   
