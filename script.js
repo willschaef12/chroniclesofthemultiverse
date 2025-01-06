@@ -1,5 +1,3 @@
-// script.js
-
 // Define the story data
 const story = {
     currentCharacter: "Loki",
@@ -47,6 +45,16 @@ const story = {
   // Track the current scene
   let currentSceneIndex = 0;
   
+  // Function to start the game
+  function startGame() {
+    // Hide the home screen and show the game container
+    document.getElementById("home-screen").classList.remove("active");
+    document.getElementById("game-container").classList.add("active");
+  
+    // Initialize the first scene
+    updateScene();
+  }
+  
   // Function to update the scene
   function updateScene() {
     const scene = story.scenes[currentSceneIndex];
@@ -88,7 +96,4 @@ const story = {
       updateScene();
     }
   }
-  
-  // Start the game
-  updateScene();
   
