@@ -99,6 +99,17 @@
       margin: 5px 0;
     }
 
+    /* Loading Screen Styles */
+    #loading-screen {
+      font-size: 1.5em;
+      font-weight: bold;
+      color: white;
+      padding: 20px;
+      background-color: #0f3460;
+      border-radius: 10px;
+      display: none;
+    }
+
     /* Game Screen */
     #game-container button {
       padding: 10px 20px;
@@ -134,12 +145,16 @@
     <button onclick="goToHome()">Back to Home</button>
   </div>
 
+  <!-- Loading Screen -->
+  <div id="loading-screen" class="screen">
+    <p>Loading... Please Wait</p>
+  </div>
+
   <!-- Game Screen -->
   <div id="game-container" class="screen">
     <div id="character">Character: Loki</div>
     <div id="story-text">The multiverse is collapsing. Will you act to save it?</div>
     <div id="choices"></div>
-    <button onclick="goToHome()">Back to Home</button>
   </div>
 
   <script src="script.js"></script>
