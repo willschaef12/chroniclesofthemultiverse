@@ -6,6 +6,7 @@
 const characters = [
   {
     name: "Loki",
+    color: "green", // Red
     stats: {
       Strength: 7,
       Speed: 7,
@@ -16,6 +17,7 @@ const characters = [
   },
   {
     name: "Flash",
+    color: "red", // Yellow
     stats: {
       Strength: 6,
       Speed: 10,
@@ -26,6 +28,7 @@ const characters = [
   },
   {
     name: "Scarlet Witch",
+    color: "purple", // Purple
     stats: {
       Strength: 5,
       Speed: 6,
@@ -36,6 +39,7 @@ const characters = [
   },
   {
     name: "Silver Surfer",
+    color: "silver", // Silver
     stats: {
       Strength: 10,
       Speed: 9,
@@ -46,6 +50,7 @@ const characters = [
   },
   {
     name: "Star-Lord",
+    color: "brown", // Blue
     stats: {
       Strength: 6,
       Speed: 8,
@@ -57,37 +62,7 @@ const characters = [
   },
 ];
 
-// Optional basic story structure
-const story = {
-  currentCharacter: "Loki",
-  scenes: [
-    {
-      text: "The multiverse is collapsing. Will you act to save it?",
-      choices: [
-        { text: "Yes, save it.", nextScene: 1 },
-        { text: "No, let it fall.", nextScene: 2 },
-      ],
-    },
-    {
-      text: "You decide to act and seek allies across the multiverse.",
-      choices: [
-        { text: "Switch to Flash", nextScene: 3 },
-        { text: "Continue as Loki", nextScene: 4 },
-      ],
-    },
-    {
-      text: "The multiverse crumbles. Chaos reigns supreme.",
-      choices: [],
-    },
-  ],
-};
-
-let currentSceneIndex = 0;
-
-/* =================================================
-   ==========   FIGHT VARIABLES   ==========
-   ================================================= */
-
+// Fight variables
 let selectedCharacter = null;
 let playerHealth = 100;
 let enemyHealth = 100;
@@ -102,7 +77,6 @@ const keys = { ArrowUp: false, ArrowDown: false, ArrowLeft: false, ArrowRight: f
    ==========   SCREEN TRANSITIONS   ==========
    ================================================= */
 
-// Show the character selection screen
 function goToCharacterSelection() {
   hideAllScreens();
   document.getElementById("character-selection-screen").classList.add("active");
@@ -126,22 +100,18 @@ function goToCharacterSelection() {
   });
 }
 
-// Select a character, show the loading screen, then fight
 function selectCharacter(characterName) {
   selectedCharacter = characters.find((c) => c.name === characterName);
-  story.currentCharacter = characterName;
 
   hideAllScreens();
   document.getElementById("loading-screen").classList.add("active");
 
-  // Simulate loading delay, then go to fight
   setTimeout(() => {
     document.getElementById("loading-screen").classList.remove("active");
     startFightScreen();
   }, 2000);
 }
 
-// Initialize the fight screen (canvas, HP, etc.)
 function startFightScreen() {
   hideAllScreens();
   document.getElementById("fight-screen").classList.add("active");
@@ -165,134 +135,84 @@ function startFightScreen() {
   requestAnimationFrame(gameLoop);
 }
 
-// Return to the home screen
 function goToHome() {
   hideAllScreens();
   document.getElementById("home-screen").classList.add("active");
 }
 
 /* =================================================
-   ==========   STORY / GAME SCREEN   ==========
-   ================================================= */
-
-function goToStory() {
-  hideAllScreens();
-  document.getElementById("game-container").classList.add("active");
-  updateScene();
-}
-
-function updateScene() {
-  const scene = story.scenes[currentSceneIndex];
-  document.getElementById("character").textContent = `Character: ${story.currentCharacter}`;
-  document.getElementById("story-text").textContent = scene.text;
-
-  const choicesElement = document.getElementById("choices");
-  choicesElement.innerHTML = "";
-
-  scene.choices.forEach((choice, index) => {
-    const button = document.createElement("button");
-    button.textContent = choice.text;
-    button.onclick = () => chooseOption(index);
-    choicesElement.appendChild(button);
-  });
-}
-
-function chooseOption(choiceIndex) {
-  const choice = story.scenes[currentSceneIndex].choices[choiceIndex];
-  if (choice) {
-    currentSceneIndex = choice.nextScene;
-    updateScene();
-  }
-}
-
-/* =================================================
    ==========   FIGHTING LOGIC   ==========
    ================================================= */
 
-// Render rectangular "sprites"
 function drawRect(obj, color) {
   ctx.fillStyle = color;
   ctx.fillRect(obj.x, obj.y, obj.width, obj.height);
 }
 
-// Update player position based on key input
 function updatePositions() {
   if (keys.ArrowUp) player.y -= player.speed;
   if (keys.ArrowDown) player.y += player.speed;
   if (keys.ArrowLeft) player.x -= player.speed;
   if (keys.ArrowRight) player.x += player.speed;
 
-  // Keep player within canvas bounds
+  // Boundaries check
   if (player.x < 0) player.x = 0;
   if (player.x + player.width > canvas.width) player.x = canvas.width - player.width;
   if (player.y < 0) player.y = 0;
   if (player.y + player.height > canvas.height) player.y = canvas.height - player.height;
 }
 
-// Main game loop
 function gameLoop() {
-  // Clear the canvas
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  // Update and draw
   updatePositions();
-  drawRect(player, "#e94560"); // Player in red
-  drawRect(enemy, "#0f3460");  // Enemy in blue
 
-  // Check win/loss conditions
-  if (playerHealth <= 0) {
+  // Draw the player's block with the selected hero's color
+  const playerColor = selectedCharacter ? selectedCharacter.color : "#e94560"; // Default red
+  drawRect(player, playerColor);
+
+  // Draw enemy block (always blue)
+  drawRect(enemy, "#0f3460");
+
+  if (playerHealth <= 0 || enemyHealth <= 0) {
     ctx.fillStyle = "white";
     ctx.font = "20px Arial";
-    ctx.fillText("You Died!", 150, 150);
-  } else if (enemyHealth <= 0) {
-    ctx.fillStyle = "white";
-    ctx.font = "20px Arial";
-    ctx.fillText("You Defeated the Enemy!", 80, 150);
+    const message = playerHealth <= 0 ? "You Died!" : "You Defeated the Enemy!";
+    ctx.fillText(message, 150, 150);
   } else {
-    // Keep animating
     requestAnimationFrame(gameLoop);
   }
 }
 
-// Updates the health info on screen
-function updateHealthDisplay() {
-  document.getElementById("health-info").textContent =
-    `Player HP: ${playerHealth} | Enemy HP: ${enemyHealth}`;
-}
-
-// Attack function
 function attackEnemy() {
-  // Check distance to enemy
   const distanceX = Math.abs(player.x - enemy.x);
   const distanceY = Math.abs(player.y - enemy.y);
   const maxAttackRange = 40;
 
   if (distanceX < maxAttackRange && distanceY < maxAttackRange) {
-    // Enemy takes damage
     enemyHealth -= 10;
-
-    // Simple counterattack
-    playerHealth -= 5;
+    playerHealth -= 5; // Counterattack
   } else {
     alert("You're too far away to attack!");
   }
-
   updateHealthDisplay();
 }
 
+function updateHealthDisplay() {
+  document.getElementById("health-info").textContent =
+    `Player HP: ${playerHealth} | Enemy HP: ${enemyHealth}`;
+}
+
 /* =================================================
-   ==========    UTILITY / MISC    ==========
+   ==========    UTILITY FUNCTIONS    ==========
    ================================================= */
 
-function showInstructions() {
-  alert("Use arrow keys to move around the fight screen. Click 'Attack Enemy' when close enough.");
+function hideAllScreens() {
+  document.querySelectorAll(".screen").forEach((screen) => {
+    screen.classList.remove("active");
+  });
 }
 
-function showCredits() {
-  alert("Created by You!");
-}
-
-// Prevent arrow keys from scrolling the page
 document.addEventListener("keydown", (e) => {
   if (keys.hasOwnProperty(e.key)) {
     e.preventDefault();
@@ -307,18 +227,17 @@ document.addEventListener("keyup", (e) => {
   }
 });
 
-// Hide all screens (utility)
-function hideAllScreens() {
-  document.querySelectorAll(".screen").forEach((screen) => {
-    screen.classList.remove("active");
-  });
+function showInstructions() {
+  alert("Use arrow keys to move your character. Click 'Attack Enemy' when close to the enemy.");
 }
 
-// Initialize the game to show the home screen
+function showCredits() {
+  alert("Created by You!");
+}
+
 function init() {
   hideAllScreens();
   document.getElementById("home-screen").classList.add("active");
 }
 
-// Start the script
 init();
