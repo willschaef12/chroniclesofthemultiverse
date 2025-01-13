@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Chronicles of the Multiverse</title>
   <style>
-    /* General Styles */
+    /* ============ GLOBAL STYLES ============ */
     body {
       font-family: Arial, sans-serif;
       background-color: #1a1a2e;
@@ -20,7 +20,6 @@
       text-align: center;
       overflow: hidden;
     }
-
     .screen {
       max-width: 600px;
       padding: 20px;
@@ -29,21 +28,10 @@
       box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.5);
       display: none;
     }
-
     .screen.active {
       display: block;
     }
-
-    /* Home Screen Styles */
-    #game-logo {
-      font-size: 2.5em;
-      font-weight: bold;
-      color: #e94560;
-      text-shadow: 0 0 10px #e94560, 0 0 20px #e94560;
-      margin-bottom: 20px;
-    }
-
-    #home-screen button {
+    button {
       padding: 10px 20px;
       font-size: 1em;
       border: none;
@@ -53,12 +41,20 @@
       color: white;
       margin: 10px 0;
     }
-
-    #home-screen button:hover {
+    button:hover {
       background-color: #e94560;
     }
 
-    /* Character Selection Screen */
+    /* ============ HOME SCREEN ============ */
+    #game-logo {
+      font-size: 2.5em;
+      font-weight: bold;
+      color: #e94560;
+      text-shadow: 0 0 10px #e94560, 0 0 20px #e94560;
+      margin-bottom: 20px;
+    }
+
+    /* ============ CHARACTER SELECTION SCREEN ============ */
     #character-selection-screen {
       display: flex;
       flex-direction: column;
@@ -66,7 +62,6 @@
       overflow-y: auto;
       max-height: 80vh;
     }
-
     .character-card {
       margin: 10px;
       padding: 15px;
@@ -78,28 +73,24 @@
       width: 100%;
       box-sizing: border-box;
     }
-
     .character-card:hover {
       transform: scale(1.05);
       background-color: #e94560;
     }
-
     .character-card h2 {
       margin: 0 0 10px;
     }
-
     #character-stats {
       margin-top: 10px;
       font-size: 0.9em;
       line-height: 1.5em;
       overflow-wrap: break-word;
     }
-
     #character-stats p {
       margin: 5px 0;
     }
 
-    /* Loading Screen Styles */
+    /* ============ LOADING SCREEN ============ */
     #loading-screen {
       font-size: 1.5em;
       font-weight: bold;
@@ -107,10 +98,10 @@
       padding: 20px;
       background-color: #0f3460;
       border-radius: 10px;
-      display: none;
     }
 
-    /* Game Screen */
+    /* ============ GAME SCREEN (Optional, if you still want story) ============ */
+    /* We'll keep it, but not use it in this example. */
     #game-container button {
       padding: 10px 20px;
       font-size: 1em;
@@ -121,14 +112,33 @@
       color: white;
       margin: 10px 0;
     }
-
     #game-container button:hover {
       background-color: #e94560;
     }
+
+    /* ============ FIGHT SCREEN ============ */
+    #fight-screen h2 {
+      margin-bottom: 10px;
+    }
+    #fight-screen #canvas-container {
+      border: 2px solid #0f3460;
+      margin-bottom: 10px;
+      position: relative;
+      width: 400px;
+      height: 300px;
+      background-color: #0f3460;
+    }
+    #fight-screen #canvas-container canvas {
+      background-color: #222;
+    }
+    #fight-screen #health-info {
+      margin: 10px 0;
+    }
   </style>
 </head>
+
 <body>
-  <!-- Home Screen -->
+  <!-- ============ HOME SCREEN ============ -->
   <div id="home-screen" class="screen active">
     <h1 id="game-logo">Chronicles of the Multiverse</h1>
     <p style="font-size: 1.2em; margin-bottom: 20px;">
@@ -139,24 +149,330 @@
     <button onclick="showCredits()">Credits</button>
   </div>
 
-  <!-- Character Selection Screen -->
+  <!-- ============ CHARACTER SELECTION SCREEN ============ -->
   <div id="character-selection-screen" class="screen">
     <div id="character-container"></div>
     <button onclick="goToHome()">Back to Home</button>
   </div>
 
-  <!-- Loading Screen -->
+  <!-- ============ LOADING SCREEN ============ -->
   <div id="loading-screen" class="screen">
     <p>Loading... Please Wait</p>
   </div>
 
-  <!-- Game Screen -->
+  <!-- ============ OPTIONAL: GAME SCREEN (STORY) ============ -->
   <div id="game-container" class="screen">
     <div id="character">Character: Loki</div>
     <div id="story-text">The multiverse is collapsing. Will you act to save it?</div>
     <div id="choices"></div>
   </div>
 
-  <script src="script.js"></script>
+  <!-- ============ FIGHT SCREEN ============ -->
+  <div id="fight-screen" class="screen">
+    <h2>Battle Screen</h2>
+    <div id="health-info"></div>
+    <div id="canvas-container">
+      <canvas id="gameCanvas" width="400" height="300"></canvas>
+    </div>
+    <button onclick="attackEnemy()">Attack Enemy</button>
+    <button onclick="goToHome()">Back to Home</button>
+  </div>
+
+  <script>
+    /* =================================================
+       ==========  CHARACTER & STORY DATA  ==========
+       ================================================= */
+    const characters = [
+      {
+        name: "Loki",
+        stats: {
+          Strength: 7,
+          Speed: 7,
+          Intelligence: 10,
+          Durability: 6,
+          Magic: 10,
+        },
+      },
+      {
+        name: "Flash",
+        stats: {
+          Strength: 6,
+          Speed: 10,
+          Intelligence: 8,
+          Durability: 5,
+          Agility: 10,
+        },
+      },
+      {
+        name: "Scarlet Witch",
+        stats: {
+          Strength: 5,
+          Speed: 6,
+          Intelligence: 8,
+          Durability: 5,
+          Magic: 10,
+        },
+      },
+      {
+        name: "Silver Surfer",
+        stats: {
+          Strength: 10,
+          Speed: 9,
+          Intelligence: 9,
+          Durability: 10,
+          CosmicPower: 10,
+        },
+      },
+      {
+        name: "Star-Lord",
+        stats: {
+          Strength: 6,
+          Speed: 8,
+          Intelligence: 8,
+          Durability: 6,
+          Agility: 9,
+          Leadership: 9,
+        },
+      },
+    ];
+
+    // Basic story structure (optional).
+    const story = {
+      currentCharacter: "Loki",
+      scenes: [
+        {
+          text: "The multiverse is collapsing. Will you act to save it?",
+          choices: [
+            { text: "Yes, save it.", nextScene: 1 },
+            { text: "No, let it fall.", nextScene: 2 },
+          ],
+        },
+        {
+          text: "You decide to act and seek allies across the multiverse.",
+          choices: [
+            { text: "Switch to Flash", nextScene: 3 },
+            { text: "Continue as Loki", nextScene: 4 },
+          ],
+        },
+        {
+          text: "The multiverse crumbles. Chaos reigns supreme.",
+          choices: [],
+        },
+      ],
+    };
+    let currentSceneIndex = 0;
+
+    // Variables for fight logic
+    let selectedCharacter = null;
+    let playerHealth = 100;
+    let enemyHealth = 100;
+
+    // Variables for canvas fight loop
+    let canvas, ctx;
+    let player = { x: 50, y: 50, width: 20, height: 20, speed: 3 };
+    let enemy = { x: 300, y: 100, width: 20, height: 20 };
+    const keys = { ArrowUp: false, ArrowDown: false, ArrowLeft: false, ArrowRight: false };
+
+    /* =================================================
+       ==========   SCREEN TRANSITIONS   ==========
+       ================================================= */
+    function goToCharacterSelection() {
+      hideAllScreens();
+      document.getElementById("character-selection-screen").classList.add("active");
+
+      const container = document.getElementById("character-container");
+      container.innerHTML = ""; // Clear previous
+
+      characters.forEach((ch) => {
+        const card = document.createElement("div");
+        card.className = "character-card";
+        card.innerHTML = `
+          <h2>${ch.name}</h2>
+          <div id="character-stats">
+            ${Object.entries(ch.stats)
+              .map(([key, value]) => `<p><strong>${key}:</strong> ${value}</p>`)
+              .join("")}
+          </div>
+        `;
+        card.onclick = () => selectCharacter(ch.name);
+        container.appendChild(card);
+      });
+    }
+
+    function selectCharacter(characterName) {
+      selectedCharacter = characters.find((c) => c.name === characterName);
+      story.currentCharacter = characterName;
+      hideAllScreens();
+      document.getElementById("loading-screen").classList.add("active");
+
+      setTimeout(() => {
+        document.getElementById("loading-screen").classList.remove("active");
+        startFightScreen(); // Jump directly to the fight screen
+      }, 2000); // Simulate loading delay
+    }
+
+    function startFightScreen() {
+      hideAllScreens();
+      document.getElementById("fight-screen").classList.add("active");
+
+      // Reset HP each time we start a fight
+      playerHealth = 100;
+      enemyHealth = 100;
+      updateHealthDisplay();
+
+      // Initialize player & enemy positions
+      player.x = 50;
+      player.y = 50;
+      enemy.x = 300;
+      enemy.y = 100;
+
+      // Setup Canvas
+      canvas = document.getElementById("gameCanvas");
+      ctx = canvas.getContext("2d");
+
+      // Start the animation loop
+      requestAnimationFrame(gameLoop);
+    }
+
+    function goToHome() {
+      hideAllScreens();
+      document.getElementById("home-screen").classList.add("active");
+    }
+
+    // Optional: If you want to show the old story screen
+    function goToStory() {
+      hideAllScreens();
+      document.getElementById("game-container").classList.add("active");
+      updateScene();
+    }
+
+    function hideAllScreens() {
+      document.querySelectorAll(".screen").forEach((screen) => {
+        screen.classList.remove("active");
+      });
+    }
+
+    /* =================================================
+       ==========    GAME / STORY FUNCTIONS   ==========
+       ================================================= */
+    function updateScene() {
+      const scene = story.scenes[currentSceneIndex];
+      document.getElementById("character").textContent = `Character: ${story.currentCharacter}`;
+      document.getElementById("story-text").textContent = scene.text;
+
+      const choicesElement = document.getElementById("choices");
+      choicesElement.innerHTML = "";
+      scene.choices.forEach((choice, index) => {
+        const button = document.createElement("button");
+        button.textContent = choice.text;
+        button.onclick = () => chooseOption(index);
+        choicesElement.appendChild(button);
+      });
+    }
+
+    function chooseOption(choiceIndex) {
+      const choice = story.scenes[currentSceneIndex].choices[choiceIndex];
+      if (choice) {
+        currentSceneIndex = choice.nextScene;
+        updateScene();
+      }
+    }
+
+    /* =================================================
+       ==========      FIGHTING LOGIC       ==========
+       ================================================= */
+    // Draw player & enemy
+    function drawRect(obj, color) {
+      ctx.fillStyle = color;
+      ctx.fillRect(obj.x, obj.y, obj.width, obj.height);
+    }
+
+    function updatePositions() {
+      if (keys.ArrowUp) player.y -= player.speed;
+      if (keys.ArrowDown) player.y += player.speed;
+      if (keys.ArrowLeft) player.x -= player.speed;
+      if (keys.ArrowRight) player.x += player.speed;
+
+      // Boundaries check (stay within 400x300 canvas)
+      if (player.x < 0) player.x = 0;
+      if (player.x + player.width > canvas.width) player.x = canvas.width - player.width;
+      if (player.y < 0) player.y = 0;
+      if (player.y + player.height > canvas.height) player.y = canvas.height - player.height;
+    }
+
+    function gameLoop() {
+      // Clear
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      // Update
+      updatePositions();
+      // Draw
+      drawRect(player, "#e94560"); // player in red
+      drawRect(enemy, "#0f3460");  // enemy in blue
+
+      // Check game-over conditions
+      if (playerHealth <= 0) {
+        ctx.fillStyle = "white";
+        ctx.font = "20px Arial";
+        ctx.fillText("You Died!", 150, 150);
+      } else if (enemyHealth <= 0) {
+        ctx.fillStyle = "white";
+        ctx.font = "20px Arial";
+        ctx.fillText("You Defeated the Enemy!", 80, 150);
+      } else {
+        requestAnimationFrame(gameLoop);
+      }
+    }
+
+    function updateHealthDisplay() {
+      document.getElementById("health-info").textContent = 
+        `Player HP: ${playerHealth} | Enemy HP: ${enemyHealth}`;
+    }
+
+    function attackEnemy() {
+      // Check if player is close enough to the enemy
+      const distanceX = Math.abs(player.x - enemy.x);
+      const distanceY = Math.abs(player.y - enemy.y);
+      const maxAttackRange = 40;
+
+      if (distanceX < maxAttackRange && distanceY < maxAttackRange) {
+        // Decrease enemy HP
+        enemyHealth -= 10;
+        // Enemy counterattacks for a simple example
+        playerHealth -= 5;
+      } else {
+        alert("You are too far away to attack!");
+      }
+      updateHealthDisplay();
+    }
+
+    /* =================================================
+       ==========     UTILITY / MISC     ==========
+       ================================================= */
+    function showInstructions() {
+      alert("Use arrow keys to move your character on the fight screen. Click 'Attack Enemy' when close enough!");
+    }
+    function showCredits() {
+      alert("Created by You!");
+    }
+
+    // Key listeners
+    document.addEventListener("keydown", (e) => {
+      if (keys.hasOwnProperty(e.key)) {
+        keys[e.key] = true;
+      }
+    });
+    document.addEventListener("keyup", (e) => {
+      if (keys.hasOwnProperty(e.key)) {
+        keys[e.key] = false;
+      }
+    });
+
+    // Initialize on home screen
+    function init() {
+      hideAllScreens();
+      document.getElementById("home-screen").classList.add("active");
+    }
+    init();
+  </script>
 </body>
 </html>
